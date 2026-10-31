@@ -1,0 +1,138 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Simulasi 3D Robot 4 DOF</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<div class="app">
+<header class="head">
+<div>
+<div class="eyebrow">SMK Pembnas Purwodadi · Perancangan Sistem Robotika</div>
+<h1>SIMULASI 3D ROBOT PEMINDAH BARANG 4 DOF</h1>
+<p class="sub">Pembelajaran Perancangan Sistem Robotika – Kelas XI Teknik Elektronika Industri</p>
+</div>
+<dl class="ident">
+<dt>Sekolah</dt><dd>SMK Pembnas Purwodadi</dd>
+<dt>Guru Pengampu</dt><dd>Agus Supriyanto, S.T., M.T.</dd>
+<dt>Kelas</dt><dd>XI Teknik Elektronika Industri</dd>
+<dt>Pengendali</dt><dd>Arduino Uno</dd>
+</dl>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Menu utama">
+<button class="tab" role="tab" id="t-simulasi" aria-controls="v-simulasi" aria-selected="true" data-v="simulasi" type="button">Simulasi</button>
+<button class="tab" role="tab" id="t-rangkaian" aria-controls="v-rangkaian" aria-selected="false" data-v="rangkaian" type="button">Rangkaian</button>
+<button class="tab" role="tab" id="t-materi" aria-controls="v-materi" aria-selected="false" data-v="materi" type="button">Materi</button>
+<button class="tab" role="tab" id="t-program" aria-controls="v-program" aria-selected="false" data-v="program" type="button">Program Arduino</button>
+<button class="tab" role="tab" id="t-evaluasi" aria-controls="v-evaluasi" aria-selected="false" data-v="evaluasi" type="button">Evaluasi</button>
+</nav>
+
+<!-- SIMULASI -->
+<section class="view" id="v-simulasi" role="tabpanel" aria-labelledby="t-simulasi">
+<div class="sim">
+<aside class="side mon" aria-label="Panel monitoring">
+<div class="card">
+<h2>Monitoring</h2>
+<div class="row"><span class="k">Arduino Uno</span><span class="badge info" id="mArd">SIAGA</span></div>
+<div class="row"><span class="k">Photodioda</span><span class="badge" id="mSen">TIDAK TERDETEKSI</span></div>
+<div class="adc" aria-hidden="true"><b id="adcBar" style="width:80%"></b><u id="adcThr" style="left:48%"></u></div>
+<div class="adcl"><span>0</span><span id="adcVal">ADC A0 = 850</span><span>1023</span></div>
+<div class="row"><span class="k">LED indikator (D13)</span><span class="v"><span class="led" id="mLed"></span><span id="mLedT">MATI</span></span></div>
+</div>
+<div class="card">
+<h3>Sudut servo</h3>
+<div class="srv"><i style="background:var(--c-turret)"></i><span class="nm">Servo 1 · Base</span><span class="deg" id="dB">90°</span><div class="bar"><b id="bB" style="background:var(--c-turret)"></b></div></div>
+<div class="srv"><i style="background:var(--c-upper)"></i><span class="nm">Servo 2 · Shoulder</span><span class="deg" id="dS">110°</span><div class="bar"><b id="bS" style="background:var(--c-upper)"></b></div></div>
+<div class="srv"><i style="background:var(--c-fore)"></i><span class="nm">Servo 3 · Elbow</span><span class="deg" id="dE">75°</span><div class="bar"><b id="bE" style="background:var(--c-fore)"></b></div></div>
+<div class="srv"><i style="background:var(--c-grip)"></i><span class="nm">Servo 4 · Gripper</span><span class="deg" id="dG">30°</span><div class="bar"><b id="bG" style="background:var(--c-grip)"></b></div></div>
+</div>
+<div class="card">
+<h3>Status robot</h3>
+<div class="row"><span class="k">Gripper</span><span class="badge" id="mGrip">TERTUTUP</span></div>
+<div class="row"><span class="k">Posisi robot</span><span class="badge info" id="mPos">HOME</span></div>
+<div class="row"><span class="k">Proses pengambilan</span><span class="badge" id="mPick">MENUNGGU</span></div>
+<div class="row"><span class="k">Proses pemindahan</span><span class="badge" id="mMove">MENUNGGU</span></div>
+<div class="row"><span class="k">Mode</span><span class="badge" id="mMode">MANUAL</span></div>
+<div class="count"><b id="mCount">0</b><span class="k" style="color:var(--muted)">barang berhasil dipindahkan</span></div>
+</div>
+</aside>
+
+<div class="stagewrap">
+<div class="stage" id="stage" aria-label="Model 3D robot pemindah barang 4 DOF. Seret untuk memutar, gulir untuk zoom.">
+<div id="tags"></div>
+<div class="hud"><span class="badge" id="hStep">Langkah 1/15</span><span class="badge info" id="hMsg">Seret untuk memutar · gulir untuk zoom</span></div>
+</div>
+<div class="viewbar" role="group" aria-label="Sudut pandang kamera">
+<button class="vbtn" type="button" data-cam="iso">Isometrik</button>
+<button class="vbtn" type="button" data-cam="front">Depan</button>
+<button class="vbtn" type="button" data-cam="side">Samping</button>
+<button class="vbtn" type="button" data-cam="top">Atas</button>
+<span class="sp"></span>
+<button class="vbtn" type="button" id="bTags" aria-pressed="true">Label</button>
+<button class="vbtn" type="button" id="bWires" aria-pressed="true">Kabel</button>
+</div>
+</div>
+
+<aside class="side" aria-label="Panel kontrol">
+<div class="card">
+<h2>Kontrol otomatis</h2>
+<div class="ctrl">
+<button class="cbtn go" id="cStart" type="button">START</button>
+<button class="cbtn pause" id="cPause" type="button" aria-pressed="false">PAUSE</button>
+<button class="cbtn stop" id="cStop" type="button">STOP</button>
+<button class="cbtn" id="cHome" type="button">HOME</button>
+<button class="cbtn" id="cReset" type="button">RESET</button>
+<button class="cbtn" id="cRepeat" type="button" aria-pressed="false">REPEAT</button>
+</div>
+<div class="rowx">
+<label for="speed">Kecepatan</label>
+<select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+</div>
+<div class="rowx">
+<button class="btn" id="cPut" type="button">Letakkan barang</button>
+<button class="btn" id="cTake" type="button">Ambil barang</button>
+</div>
+<p class="hint">Letakkan barang di Pick Area untuk menguji sensor. START akan meletakkan barang sendiri jika belum ada.</p>
+</div>
+<div class="card">
+<h2>Kontrol manual servo</h2>
+<div class="sl"><div class="top"><span><i style="background:var(--c-turret)"></i>Servo 1 · Base</span><b id="vB">90°</b></div><input type="range" id="sB" min="0" max="180" value="90" aria-label="Servo 1 Base Rotation"><div class="mm"><span>0°</span><span>batas 0–180°</span><span>180°</span></div></div>
+<div class="sl"><div class="top"><span><i style="background:var(--c-upper)"></i>Servo 2 · Shoulder</span><b id="vS">110°</b></div><input type="range" id="sS" min="20" max="160" value="110" aria-label="Servo 2 Shoulder"><div class="mm"><span>20°</span><span>batas 20–160°</span><span>160°</span></div></div>
+<div class="sl"><div class="top"><span><i style="background:var(--c-fore)"></i>Servo 3 · Elbow</span><b id="vE">75°</b></div><input type="range" id="sE" min="20" max="170" value="75" aria-label="Servo 3 Elbow"><div class="mm"><span>20°</span><span>batas 20–170°</span><span>170°</span></div></div>
+<div class="sl"><div class="top"><span><i style="background:var(--c-grip)"></i>Servo 4 · Gripper</span><b id="vG">30°</b></div><input type="range" id="sG" min="20" max="120" value="30" aria-label="Servo 4 Gripper"><div class="mm"><span>20° tutup</span><span>batas 20–120°</span><span>120° buka</span></div></div>
+<p class="hint">Menggeser slider menghentikan proses otomatis. Lengan tidak boleh menyentuh meja. Tutup gripper (sekitar 50°) saat jepitan berada di barang untuk mengambilnya.</p>
+</div>
+</aside>
+</div>
+
+<div class="card" style="margin-top:12px">
+<h2>Urutan proses kerja robot</h2>
+<ol class="steps" id="steps"></ol>
+<p class="nowtxt" id="nowtxt">Tekan START untuk memulai simulasi otomatis.</p>
+</div>
+</section>
+
+<!-- RANGKAIAN -->
+<section class="view" id="v-rangkaian" role="tabpanel" aria-labelledby="t-rangkaian" hidden></section>
+<!-- MATERI -->
+<section class="view" id="v-materi" role="tabpanel" aria-labelledby="t-materi" hidden></section>
+<!-- PROGRAM -->
+<section class="view" id="v-program" role="tabpanel" aria-labelledby="t-program" hidden></section>
+<!-- EVALUASI -->
+<section class="view" id="v-evaluasi" role="tabpanel" aria-labelledby="t-evaluasi" hidden></section>
+
+<footer>SIMULASI 3D ROBOT PEMINDAH BARANG 4 DOF · SMK Pembnas Purwodadi · Guru Pengampu: Agus Supriyanto, S.T., M.T. · Model disederhanakan untuk pembelajaran.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="scene.js"></script>
+<script src="electronics.js"></script>
+<script src="logic.js"></script>
+<script src="rangkaian.js"></script>
+<script src="materi.js"></script>
+<script src="program.js"></script>
+<script src="quiz.js"></script>
+<script src="main.js"></script>
+
+</body></html>
